@@ -9,28 +9,41 @@ calc_fpkm <- function(counts, gene2length) {
 }
 
 #' @export
-calc_cpm <- function(counts, spikes) {
-        totreads = colSums(counts[-spikes,]);
-        cpms = t(t(counts)/totreads)*1000000;
-        return(cpms);
+calc_cpm <- function(expr_mat, spikes = NULL) {
+    norm_factor <- colSums(expr_mat[-spikes,])
+    return(t(t(expr_mat)/norm_factor))*10^6
 }
 
 #' @export
-calc_SF <- function (counts, spikes, locfunc = median) {
-	loggeomeans <- rowMeans(log(counts[-spikes,]))
-	size_factor = apply(counts[-spikes,], 2, function(cnts) exp(locfunc((log(cnts) -
-	loggeomeans)[is.finite(loggeomeans)])))
-	return(t(t(counts)/size_factor))
+calc_sf <- function(expr_mat, spikes = NULL) {
+    geomeans <- exp(rowMeans(log(expr_mat[-spikes,])))
+    SF<-function(cnts){median((cnts/geomeans)[(is.finite(geomeans) & geomeans > 0)])}
+    norm_factor <- apply(expr_mat[-spikes,], 2, SF)
+    return(t(t(expr_mat)/norm_factor))
 }
 
 #' @export
-calc_UQ <- function (counts, spikes) {
-        UQ <- function(x){quantile(x[x>0],0.75)};
-        uq = unlist(apply(counts[-spikes,],2,UQ));
-        normfactor = (uq/median(uq)) ;
-        UQnorm = t(t(counts)/normfactor);
-        return(UQnorm);
+calc_uq <- function(expr_mat, spikes = NULL) {
+    UQ <- function(x){quantile(x[x > 0], 0.75)}
+    uq <- unlist(apply(expr_mat[-spikes, ], 2, UQ))
+    norm_factor <- uq/median(uq)
+    return(t(t(expr_mat)/norm_factor))
 }
+
+#' @export
+calc_cell_RLE <- function(expr_mat, spikes = NULL) {
+    RLE_gene <- function(x) {
+        if (median(unlist(x)) > 0) {
+            log( (x + 1) / ( median(unlist(x)) + 1 ) ) / log(2)
+        } else {
+            rep(NA, times = length(s))
+        }
+    }
+    RLE_matrix <- t(apply(expr_mat[-spikes, ], 1, RLE_gene))
+    cell_RLE <- apply(RLE_matrix, 2, median, na.rm = T)
+    return(cell_RLE)
+}
+
 
 #' @export
 filter_genes <- function(expr_mat) {
@@ -45,19 +58,6 @@ QC_histogram <- function(score, name="Score") {
 	sigma = sd(score);
 	hist(score, col="grey75", xlab=name, main="", prob=TRUE)
 	curve(dnorm(x, mean=mu, sd=sigma), add=TRUE);
-}
-
-#' @export
-calc_cell_RLE <- function(expr_mat) {
-	 out = t(apply(expr_mat , 1, function(x){
-                        if(median(unlist(x)) > 0) {
-                                log((x+1)/(median(unlist(x))+1))/log(2)
-                        } else {
-                                rep(NA, times=length(x))
-                        }
-                }))
-	cell_med = apply(out, 2, median, na.rm=T)
-	return(cell_med)
 }
 
 #' @export
