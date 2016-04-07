@@ -39,7 +39,11 @@ calc_cell_RLE <- function(expr_mat, spikes = NULL) {
             rep(NA, times = length(x))
         }
     }
-    RLE_matrix <- t(apply(expr_mat[-spikes, ], 1, RLE_gene))
+    if(!is.null(spikes)) {
+        RLE_matrix <- t(apply(expr_mat[-spikes, ], 1, RLE_gene))
+    } else {
+        RLE_matrix <- t(apply(expr_mat, 1, RLE_gene))
+    }
     cell_RLE <- apply(RLE_matrix, 2, median, na.rm = T)
     return(cell_RLE)
 }
