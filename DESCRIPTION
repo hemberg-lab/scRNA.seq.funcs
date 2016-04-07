@@ -1,11 +1,16 @@
 Package: scRNA.seq.funcs
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Functions for analysis of scRNA-seq data
 Version: 0.1.0
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Maintainer: Vladimir Kiselev <vladimir.yu.kiselev@gmail.com>
+Author: Vladimir Kiselev
+Authors@R: person("Vladimir", "Kiselev",
+            email = "vladimir.yu.kiselev@gmail.com",
+            role = c("aut", "cre"))
+Description: These functions were developed for the following course:
+            http://hemberg-lab.github.io/scRNA.seq.course.
+License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Imports:
-    statmod
+Imports: graphics, stats, utils, Rtsne, statmod, hypergeo, orthopolynom,
+        moments

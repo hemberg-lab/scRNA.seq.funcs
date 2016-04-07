@@ -33,6 +33,7 @@ merge_pcaReduce_results <- function(dat, k) {
 }
 
 #' @export
+#' @importFrom Rtsne Rtsne
 tsne_mult <- function(dataset, ks, n) {
     res <- list()
     for(i in 1:n) {
