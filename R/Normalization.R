@@ -47,3 +47,23 @@ calc_cell_RLE <- function(expr_mat, spikes = NULL) {
     cell_RLE <- apply(RLE_matrix, 2, median, na.rm = T)
     return(cell_RLE)
 }
+
+#' @export
+Down_Sample_Matrix <- function(expr_mat) {
+    min_lib_size <- min(colSums(expr_mat))
+    down_sample <- function(x) {
+        prob <- min_lib_size/sum(x)
+        return(
+            unlist(
+                lapply(
+                    x,
+                    function(y) {
+                        rbinom(1, y, prob)
+                    }
+                )
+            )
+        )
+    }
+    down_sampled_mat <- apply(expr_mat, 2, down_sample)
+    return(down_sampled_mat)
+}
